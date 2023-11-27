@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+</head>
+
+<style>
+    body {
+        background-image: linear-gradient(195deg, #49a3f1, #1a73e8) !important;
+        height: 100vh;
+    }
+
+    .container {
+        border: 2px solid #000;
+        box-shadow: #49a3f1;
+        background-color: aliceblue;
+        width: 30vw;
+        position: relative;
+        top: 30vh;
+        left: 34vw;
+        padding: 10px 10px;
+    }
+
+    .todo_heading {
+        text-align: center;
+        font-size: 30px;
+        color: #1a73e8;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        text-transform: uppercase;
+    }
+
+    input {
+        border: 2px solid #49a3f1;
+        height: 3vh;
+        width: 70%;
+        padding: 6px 6px;
+        /* position: relative; */
+        /* left:3%; */
+        border-radius: 6px;
+    }
+
+    button {
+        background-image: linear-gradient(195deg, #49a3f1, #1a73e8) !important;
+        border: none;
+        padding: 10px 40px;
+        border-radius: 6px;
+        color: white;
+    }
+
+    .list {
+        display: flex;
+        justify-content: center;
+        gap: 8rem;
+        font-size: 20px;
+    }
+
+    ul {
+        list-style: none;
+        gap: 8rem;
+        font-size: 14px;
+    }
+
+    li {
+        display: block;
+        margin-bottom: 10px;
+        padding: 10px;
+        /* Added padding for the entire list item */
+    }
+
+    /* Style for the time/date and delete button */
+    .task-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .task-time {
+        margin-right: 10px;
+        /* Adjust as needed to set the space between time and button */
+    }
+
+    .delete-btn {
+        background-color: #FF6347;
+        /* Change delete button color */
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    @media (max-width:600px) {
+        .container {
+            width:auto;
+            left:0vw;
+        }
+
+        input {
+            width:60%;
+        }
+
+        .list {
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+    }
+    @media (max-width:900px) {
+        .container {
+            width:auto;
+            left:0vw;
+        }
+
+        input {
+            width:80%;
+        }
+
+        .list {
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+    }
+    @media (max-width:1200px) {
+        .container {
+            width:auto;
+            left:0vw;
+        }
+
+        input {
+            width:80%;
+        }
+
+        .list {
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="todoList">
+            <h1 class="todo_heading">Todo List</h1>
+            <form onsubmit="return addTodoList()">
+                <input type="text" id="add_new_task" placeholder="Add a new task">
+                <button type="submit" value="submit" id="add_task_button">Add</button>
+            </form>
+            <div class="list">
+                <h6 class="alltasks" style="cursor: pointer;">All Tasks</h6>
+            </div>
+           <div id="alltask" style="display:block;">
+           </div>
+        </div>
+    </div>
+</body>
+<script>
+    function addTodoList(e) {
+    // Prevent form submission for this example
+    e.preventDefault();
+
+    let addNewTask = document.querySelector('#add_new_task').value;
+
+    if (addNewTask === '') {
+        alert('Please fill the field');
+    } else {
+        let createList = document.createElement('li');
+        let text = document.createTextNode(addNewTask);
+        createList.appendChild(text);
+
+        let currentDateTime = new Date();
+        let dateTime = document.createTextNode(' - ' + currentDateTime.toLocaleTimeString());
+        let DTSpan = document.createElement('span');
+        DTSpan.classList.add('task-time');
+        DTSpan.appendChild(dateTime);
+
+        let deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.innerHTML = 'Delete';
+        deleteBtn.addEventListener('click', function () {
+            createList.remove();
+            updateLocalStorage() ;
+        });
+
+        // Append elements to createList
+        createList.appendChild(DTSpan);
+        createList.appendChild(deleteBtn);
+
+        // Append the new task to the "All Tasks" section
+        let allTaskSection = document.querySelector('#alltask');
+        allTaskSection.appendChild(createList);
+
+        // Clear the input field after adding the task
+        
+        // /it is used for to store in LOCALSTORAGE
+        if(addNewTask.trim()!==''){
+            let all_Tasks_List = JSON.parse(localStorage.getItem('all_Tasks_List')) || [];
+            all_Tasks_List.push(addNewTask);
+            localStorage.setItem('all_Tasks_List',JSON.stringify(all_Tasks_List));
+        }
+        document.querySelector('#add_new_task').value = '';
+    }
+}
+
+document.querySelector('#add_task_button').addEventListener('click', addTodoList);
+
+function displayTaskFromLocalStorage(){
+    let all_Tasks_List = JSON.parse(localStorage.getItem('all_Tasks_List'))||[];
+    let take_List = document.querySelector('#alltask');
+    all_Tasks_List.forEach(all_Tasks_List => {
+        let createList = document.createElement('li');
+        let text = document.createTextNode(all_Tasks_List);
+        createList.appendChild(text);
+
+        let currentDateTime = new Date();
+        let dateTime = document.createTextNode(' - ' + currentDateTime.toLocaleTimeString());
+        let DTSpan = document.createElement('span');
+        DTSpan.classList.add('task-time');
+        DTSpan.appendChild(dateTime);
+
+        let deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.innerHTML = 'Delete';
+        deleteBtn.addEventListener('click', function () {
+            createList.remove();
+        });
+
+        // Append elements to createList
+        createList.appendChild(DTSpan);
+        createList.appendChild(deleteBtn);
+
+        // Append the new task to the "All Tasks" section
+        let allTaskSection = document.querySelector('#alltask');
+        allTaskSection.appendChild(createList);                
+    });
+}
+
+window.addEventListener('load',function(){
+    displayTaskFromLocalStorage();
+})
+
+function updateLocalStorage() {
+    let tasksElement = document.querySelectorAll('#alltask li');
+    let all_Tasks_List = [];
+    tasksElement.forEach(task => {
+        all_Tasks_List.push(task.firstChild.textContent.trim());
+    });
+    localStorage.setItem('all_Tasks_List', JSON.stringify(all_Tasks_List));
+}
+
+</script>
+</html>
